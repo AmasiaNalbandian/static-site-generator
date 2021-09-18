@@ -13,6 +13,7 @@ function parseArguments(argsRaw) {
       "--i": "--input",
       "--empty": Boolean,
       "--e": "--empty",
+      
     },
     {
       argv: argsRaw.slice(2),
@@ -59,7 +60,7 @@ async function promptOptions(options) {
   return {
     ...options,
     empty: options.empty || res.empty,
-    argv: filename
+    files: filename
   };
 }
 
@@ -71,6 +72,7 @@ export async function cli(args) {
     await createHtml(options.files.slice(1));
   } else {
     options = await promptOptions(options);
+    await createHtml(options.files);
   }
   
 }

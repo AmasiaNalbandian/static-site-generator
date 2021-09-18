@@ -3,5 +3,3 @@
 require = require('esm')(module /*, options */);
 
 require ('../src/cli').cli(process.argv);
-
-console.log("This is working up to here:")
