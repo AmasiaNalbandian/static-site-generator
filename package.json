@@ -1,0 +1,29 @@
+{
+  "name": "ssg",
+  "version": "1.0.0",
+  "description": "A CLI used to create html files from text files",
+  "main": "src/index.js",
+  "bin": {
+    "create-html": "bin/create-html"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "cli",
+    "create-html"
+  ],
+  "author": "Amasia Nalbandian",
+  "license": "ISC",
+  "dependencies": {
+    "arg": "^5.0.1",
+    "chalk": "^4.1.2",
+    "esm": "^3.2.25",
+    "fs-extra": "^10.0.0",
+    "inquirer": "^8.1.5",
+    "ncp": "^2.0.0"
+  }
+}
