@@ -1,13 +1,15 @@
 import chalk from "chalk";
 import fs from "fs";
-import path from "path";
-
-
 const fse = require('fs-extra')
 
+// will allow us to recursively convert HTML in a folder once
+// This feature will be removed once the recursiveness is functional
 let recursiveSearch = 0;
 
 function filterArguments(args) {
+  // if (!isRecursive) {
+  //   recursiveSearch++;
+  // }
   for (let i = 0; i < args.length; i++) {
     // try to get access to file:
     fs.stat(args[i], (err, stats) => {
@@ -54,6 +56,7 @@ async function writeHTML(data, filename) {
     <meta charset="utf-8">
     <title>Filename</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   </head>
   <body>\n`;
 
@@ -137,8 +140,6 @@ async function readDirectory(directoryPath) {
   2) recursively access files in the directory and perform option 1
 */
 export async function createHtml(files) {
-  console.log("Received the following files: ", files);
-
   await emptyDist();
   filterArguments(files)
 

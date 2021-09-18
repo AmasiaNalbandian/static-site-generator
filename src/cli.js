@@ -3,8 +3,6 @@ import inquirer from "inquirer";
 import { createHtml} from './main';
 
 
-
-
 function parseArguments(argsRaw) {
 
   const args = arg(
@@ -13,7 +11,8 @@ function parseArguments(argsRaw) {
       "--i": "--input",
       "--empty": Boolean,
       "--e": "--empty",
-      
+      "--recursive": Boolean,
+      "--r":"--recursive"
     },
     {
       argv: argsRaw.slice(2),
@@ -23,6 +22,7 @@ function parseArguments(argsRaw) {
   return {
     input: args["--input"] || false,
     empty: args["--empty"] || false,
+    // recursive: args["--recursive"] || false,
     files: argsRaw.slice(2),
   };
   
@@ -66,10 +66,14 @@ async function promptOptions(options) {
 
 export async function cli(args) {
   let options = parseArguments(args);
-  console.log("options returned from parse", options);
   
   if (options.files[0] === "--i" || options.files === "--input"){
-    await createHtml(options.files.slice(1));
+    
+    // if (options.recursive) {
+    //   await createHtml(options.files.slice(2), options.recursive);
+    // } else {
+      await createHtml(options.files.slice(1), options.recursive);
+    // }
   } else {
     options = await promptOptions(options);
     await createHtml(options.files);
