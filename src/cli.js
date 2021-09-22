@@ -1,7 +1,8 @@
 import arg from "arg";
 import inquirer from "inquirer";
+import chalk from "chalk";
 import { createHtml} from './main';
-
+const p = require("../package");
 
 function parseArguments(argsRaw) {
 
@@ -12,21 +13,86 @@ function parseArguments(argsRaw) {
       "--empty": Boolean,
       "--e": "--empty",
       "--recursive": Boolean,
-      "--r":"--recursive"
-    },
-    {
-      argv: argsRaw.slice(2),
+      "--r":"--recursive",
+      "--help": Boolean,
+      "--h":"--help",
+      "--version": Boolean,
+      "--v":"--version"
     }
   );
 
-  return {
+  const values = {
     input: args["--input"] || false,
     empty: args["--empty"] || false,
+    version: args["--version"] || false,
+    help: args["--help"] || false,
     // recursive: args["--recursive"] || false,
-    files: argsRaw.slice(2),
+    files: []
   };
+
+  // Will print out the help dialogue - this flag will not do anything other than print out the help.
+  if (values.help) {
+    printHelp();
+    return;
+  }
+
+  // Prints out the dialogue for the version of the package, alongside the name of the package.
+  if (values.version) {
+    console.error(
+      "%s",
+      chalk.green.bold.inverse(
+        p.name + " version: " + p.version + "\n"
+      ),
+    );
+  }
+
+
+  // filter out all arguments after the --input flag to identify as text files and push to the values.files
+  if (values.input) {
+    //find the location of where the input flag was put, and parse arguments after that as files.
+    let files = argsRaw.splice(argsRaw.indexOf("--i") + 1);
+
+    files.forEach(file => {
+      if (file.includes(".txt")){
+        values.files.push({
+          name: file,
+          type: "txt"
+        })
+      } else if (file.includes(".md")) {
+        values.files.push({
+          name: file,
+          type: "md"
+        })
+      }
+    });
+  }
+
+  return values;
   
 }
+
+function printHelp() {
+  console.log(
+    "%s",
+    chalk.blue.bold.underline(
+      "Information Directives:"
+    ),
+  );
+
+  console.log(
+    "%s",
+    chalk.cyan(
+      "The Static Site Generator will accept .txt files and convert the data within it to HTML.\nThese HTML files can then be used to host the website\n"
+    ),
+  );
+
+  console.log(
+   "%s \n--version: provides version of package\n--input: flag used to indicate files to convert", chalk.inverse.bold("Flag Directory")
+    );
+  
+}
+
+
 
 async function promptOptions(options) {
   const promptQuestions = [];
@@ -66,13 +132,8 @@ async function promptOptions(options) {
 
 export async function cli(args) {
   let options = parseArguments(args);
-  
-  if (options.files[0] === "--i" || options.files === "--input"){
-    
-    // if (options.recursive) {
-    //   await createHtml(options.files.slice(2), options.recursive);
-    // } else {
-      await createHtml(options.files.slice(1), options.recursive);
+    if (options.input){
+      await createHtml(options.files, options.recursive);
     // }
   } else {
     options = await promptOptions(options);
