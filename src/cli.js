@@ -1,7 +1,8 @@
 import arg from "arg";
 import inquirer from "inquirer";
+import chalk from "chalk";
 import { createHtml} from './main';
-
+const p = require("../package");
 
 function parseArguments(argsRaw) {
 
@@ -12,20 +13,40 @@ function parseArguments(argsRaw) {
       "--empty": Boolean,
       "--e": "--empty",
       "--recursive": Boolean,
-      "--r":"--recursive"
-    },
-    {
-      argv: argsRaw.slice(2),
+      "--r":"--recursive",
+      "--help": Boolean,
+      "--h":"--help",
+      "--version": Boolean,
+      "--v":"--version"
     }
   );
 
-  return {
+  const values = {
     input: args["--input"] || false,
     empty: args["--empty"] || false,
+    version: args["--version"] || false,
+    help: args["--help"] || false,
     // recursive: args["--recursive"] || false,
-    files: argsRaw.slice(2),
+    raw: argsRaw
   };
+
+  if (values.version) {
+    console.error(
+      "%s",
+      chalk.green.bold(
+        p.name + " version: " + p.version + "\n"
+      ),
+    );
+  }
+
+  return values;
   
+}
+
+
+function getInputFiles(args) {
+  console.log("received input")
+
 }
 
 async function promptOptions(options) {
@@ -65,18 +86,19 @@ async function promptOptions(options) {
 }
 
 export async function cli(args) {
+  console.log(args)
   let options = parseArguments(args);
-  
-  if (options.files[0] === "--i" || options.files === "--input"){
+  console.log(options)
+  // if (options.files[0] === "--i" || options.files === "--input"){
     
-    // if (options.recursive) {
-    //   await createHtml(options.files.slice(2), options.recursive);
-    // } else {
-      await createHtml(options.files.slice(1), options.recursive);
-    // }
-  } else {
-    options = await promptOptions(options);
-    await createHtml(options.files);
-  }
+  //   // if (options.recursive) {
+  //   //   await createHtml(options.files.slice(2), options.recursive);
+  //   // } else {
+  //     await createHtml(options.files.slice(1), options.recursive);
+  //   // }
+  // } else {
+  //   options = await promptOptions(options);
+  //   await createHtml(options.files);
+  // }
   
 }
