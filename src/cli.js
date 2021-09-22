@@ -30,14 +30,39 @@ function parseArguments(argsRaw) {
     raw: argsRaw
   };
 
+  // Will print out the help dialogue - this flag will not do anything other than print out the help.
+  if (values.help) {
+    console.log(
+      "%s",
+      chalk.blue.bold.underline(
+        "Information Directives:"
+      ),
+    );
+
+    console.log(
+      "%s",
+      chalk.cyan(
+        "The Static Site Generator will accept .txt files and convert the data within it to HTML.\nThese HTML files can then be used to host the website\n"
+      ),
+    );
+
+    console.log(
+     "%s \n--version: provides version of package\n--input: flag used to indicate files to convert", chalk.inverse.bold("Flag Directory")
+      );
+    
+    return;
+  }
+
+  // Prints out the dialogue for the version of the package, alongside the name of the package.
   if (values.version) {
     console.error(
       "%s",
-      chalk.green.bold(
+      chalk.green.bold.inverse(
         p.name + " version: " + p.version + "\n"
       ),
     );
   }
+
 
   return values;
   
