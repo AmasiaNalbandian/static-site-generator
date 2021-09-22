@@ -6,6 +6,7 @@ const p = require("../package");
 
 function parseArguments(argsRaw) {
 
+  // All acceptable flags
   const args = arg(
     {
       "--input": Boolean,
@@ -21,6 +22,7 @@ function parseArguments(argsRaw) {
     }
   );
 
+  // Variable to hold parsed arguments.
   const values = {
     input: args["--input"] || false,
     empty: args["--empty"] || false,
@@ -30,10 +32,11 @@ function parseArguments(argsRaw) {
     files: []
   };
 
-  // Will print out the help dialogue - this flag will not do anything other than print out the help.
+  // If flag for help present, will print help dialogue- 
+  // this flag disregards all other arguments, assuming user doesn't understand how to use package.
   if (values.help) {
     printHelp();
-    return;
+    return values;
   }
 
   // Prints out the dialogue for the version of the package, alongside the name of the package.
@@ -52,48 +55,46 @@ function parseArguments(argsRaw) {
     //find the location of where the input flag was put, and parse arguments after that as files.
     let files = argsRaw.splice(argsRaw.indexOf("--i") + 1);
 
-    files.forEach(file => {
-      if (file.includes(".txt")){
-        values.files.push({
-          name: file,
-          type: "txt"
-        })
-      } else if (file.includes(".md")) {
-        values.files.push({
-          name: file,
-          type: "md"
-        })
-      }
-    });
+    values.files = filterFiles(files)
   }
-
   return values;
-  
 }
+
+function filterFiles(files){
+
+  let filteredFiles = [];
+  files.forEach(file => {
+    if (file.includes(".txt")){
+      filteredFiles.push({
+        name: file,
+        type: "txt"
+      })
+    } else if (file.includes(".md")) {
+      filteredFiles.push({
+        name: file,
+        type: "md"
+      })
+    }
+  });
+
+  return filteredFiles;
+
+}
+
 
 function printHelp() {
   console.log(
-    "%s",
+    "%s%s%s\n--version: provides version of package\n--input: flag used to indicate files to convert",
     chalk.blue.bold.underline(
       "Information Directives:"
-    ),
-  );
-
-  console.log(
-    "%s",
-    chalk.cyan(
+    ),chalk.cyan(
       "The Static Site Generator will accept .txt files and convert the data within it to HTML.\nThese HTML files can then be used to host the website\n"
-    ),
+    ),chalk.inverse.bold("Flag Directory")
   );
-
-  console.log(
-   "%s \n--version: provides version of package\n--input: flag used to indicate files to convert", chalk.inverse.bold("Flag Directory")
-    );
-  
 }
 
 
-
+// Future feature: Prompt for user to enter file names separately.
 async function promptOptions(options) {
   const promptQuestions = [];
   if (!options.input && !options.empty) {
@@ -106,38 +107,50 @@ async function promptOptions(options) {
     });
   }
 
-
-
   const res = await inquirer.prompt(promptQuestions);
-  let filename ="";
+  let filenames = "";
   if (!res.empty && !options.input) {
     promptQuestions.splice(0,promptQuestions.length);
+    
+    
     promptQuestions.push({
-        type: "input",
+        // type: "input",
         name: "filename",
         message: "Please enter the file name: ",
         default: false,
       });
       
-      filename = await inquirer.prompt(promptQuestions);
+      // filenames = await inquirer.prompt(promptQuestions);
+
+      inquirer.prompt(promptQuestions).then(ans => {
+        console.log(ans);
+      })
   }
 
+  // let place = filenames.toString().splice(" ");
+
+  console.log("filenames out", (filenames['filenames']));
+  console.log("filenames", (typeof filenames.toString()));
+  
+  let filteredFiles = filterFiles(filenames)
 
   return {
     ...options,
     empty: options.empty || res.empty,
-    files: filename
+    files: filteredFiles
   };
 }
 
 export async function cli(args) {
   let options = parseArguments(args);
-    if (options.input){
+    if (options.input && !options.help){
       await createHtml(options.files, options.recursive);
     // }
   } else {
     options = await promptOptions(options);
+    console.log("returned from optiopns", options)
     await createHtml(options.files);
+    console.log("after call")
   }
   
 }
