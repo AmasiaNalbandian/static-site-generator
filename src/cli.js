@@ -151,11 +151,11 @@ async function promptOptions(options) {
 
 export async function cli(args) {
   let options = await parseArguments(args);
-  if (options.input) {
+  if (options && options.input) {
     await createHtml(options.directories, true)
     await createHtml(options.files, false);
   } else {
-    console.log("Input files were not received.")
+    // console.log("Input files were not received.")
     // options = await promptOptions(options);
     // await createHtml(options.files);
   }

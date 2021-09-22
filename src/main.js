@@ -50,23 +50,32 @@ async function emptyDist() {
 
 // fn to write HTML format
 async function writeHTML(data, filename) {
+  let dataForBody = "";
+  let title;
+  if (data.length) {
+    let linecount = 0;
+    
+    let content = data.split("\n");
+    content.forEach((line) => {
+      if(linecount ===0) {
+        title = line;
+        dataForBody += `<h1>${line}</h1>\n`;
+      } else {
+        dataForBody += `<p>${line}</p>\n`;
+      }
+      linecount++
+    });
+  }
+
   let datatoHTML = `<!doctype html>
   <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Filename</title>
+    <title>${title}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   </head>
-  <body>\n`;
-
-  if (data.length) {
-    let content = data.split("\n");
-    content.forEach((line) => {
-      datatoHTML += `<p>${line}</p>\n`;
-    });
-  }
-  datatoHTML += `</body>
+  <body>\n${dataForBody}</body>
   </html>
   `;
   const newname = filename.replace(/\.[^/.]+$/, ".html");
