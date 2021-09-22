@@ -12,24 +12,24 @@ function filterArguments(args) {
   // }
   for (let i = 0; i < args.length; i++) {
     // try to get access to file:
-    fs.stat(args[i], (err, stats) => {
+    fs.stat(args[i].name, (err, stats) => {
       if (err) {
         console.error(
           "%s",
           chalk.red.bold(
-            "The following file or directory does not exist: " + args[i] + "\nPlease check you have provided the correct path"
+            "The following file or directory does not exist: " + args[i].name + "\nPlease check you have provided the correct path"
           ),
         );
       } else {
         // if it exists handle whether its a file or directory
         if (stats.isDirectory()) {
           if (recursiveSearch === 0) {
-            !fs.existsSync(`./dist/${args[i]}`) && fs.mkdirSync(`./dist/${args[i]}`, { recursive: true })
-            readDirectory(args[i])
+            !fs.existsSync(`./dist/${args[i].name}`) && fs.mkdirSync(`./dist/${args[i].name}`, { recursive: true })
+            readDirectory(args[i].name)
           }
           recursiveSearch++;
         } else {
-          readFile(args[i])
+          readFile(args[i].name)
         }
       }
     });

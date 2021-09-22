@@ -131,17 +131,9 @@ async function promptOptions(options) {
 }
 
 export async function cli(args) {
-  // console.log(args)
   let options = parseArguments(args);
-  // console.log(options)
-  
-  
-  if (options.files[0] === "--i" || options.files === "--input"){
-    
-    // if (options.recursive) {
-    //   await createHtml(options.files.slice(2), options.recursive);
-    // } else {
-      await createHtml(options.files.slice(1), options.recursive);
+    if (options.input){
+      await createHtml(options.files, options.recursive);
     // }
   } else {
     options = await promptOptions(options);
