@@ -36,7 +36,7 @@ function checkExists(args, recursive) {
   }
 }
 
-// Markdown Support Fcuntion
+// Markdown Support Function
 function parseMarkdown(markdownText) {
 	const htmlText = markdownText
 		.replace(/^### (.*$)/gim, '<h3>$1</h3>')
