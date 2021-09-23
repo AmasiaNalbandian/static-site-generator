@@ -75,9 +75,9 @@ async function writeHTML(data, filename) {
     content.forEach((line) => {
       if(linecount ===0) {
         title = line;
-        dataForBody += `<h1>${line}</h1>\n`;
+        dataForBody += `<h1>${parseMarkdown(line)}</h1>\n`;
       } else {
-        dataForBody += `<p>${line}</p>\n`;
+        dataForBody += `<p>${parseMarkdown(line)}</p>\n`;
       }
       linecount++
     });
