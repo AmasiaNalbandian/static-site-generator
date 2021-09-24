@@ -72,7 +72,7 @@ function getFiles(files, values) {
       // getFiles(dirFiles, values)
 
       dirFiles.forEach((f) => {
-        let newpath = "./" + file + f; // condense into the statement, no need for var
+        let newpath = "./" + file +'/'+ f; // condense into the statement, no need for var
         values.files.push({
           name: newpath,
         });
