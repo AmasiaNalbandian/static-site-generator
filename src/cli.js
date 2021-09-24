@@ -73,7 +73,6 @@ function getFiles(files, values) {
 
       dirFiles.forEach((f) => {
         let newpath = "./" + file +'/'+ f; // condense into the statement, no need for var
-        console.log("newpath", f)
         values.files.push({
           name: newpath,
         });
