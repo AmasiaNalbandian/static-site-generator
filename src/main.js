@@ -29,14 +29,15 @@ function checkExists(args, recursive) {
           }
           recursiveSearch++;
         } else {
-          readFile(args[i].name);
+
+          readFile(args[i].name , args[i].type);
         }
       }
     });
   }
 }
 
-// Markdown Support Function
+// Markdown support function
 function parseMarkdown(markdownText) {
 	const htmlText = markdownText
 		.replace(/^### (.*$)/gim, '<h3>$1</h3>')
@@ -47,13 +48,10 @@ function parseMarkdown(markdownText) {
 		.replace(/\*(.*)\*/gim, '<i>$1</i>')
 		.replace(/!\[(.*?)\]\((.*?)\)/gim, "<img alt='$1' src='$2' />")
 		.replace(/\[(.*?)\]\((.*?)\)/gim, "<a href='$2'>$1</a>")
-		.replace(/\n$/gim, '<br /><br />')
+		.replace(/\n$/gim, '<br />')
 
 	return htmlText.trim()
 }
-
-
-
 
 // Handle the dist file:
 async function emptyDist() {
@@ -64,8 +62,9 @@ async function emptyDist() {
   }
 }
 
+
 // fn to write HTML format
-async function writeHTML(data, filename) {
+async function writeHTML(data, filename , filetype) {
   let dataForBody = "";
   let title;
   if (data.length) {
@@ -75,9 +74,21 @@ async function writeHTML(data, filename) {
     content.forEach((line) => {
       if(linecount ===0) {
         title = line;
-        dataForBody += `<h1>${parseMarkdown(line)}</h1>\n`;
+
+        if(filetype == 'md'){
+          dataForBody += `<h1>${parseMarkdown(line)}</h1>\n`;
+        }else {
+          dataForBody += `<h1>${line}</h1>\n`;
+        }
+
       } else {
-        dataForBody += `<p>${parseMarkdown(line)}</p>\n`;
+
+        if(filetype == 'md'){
+          dataForBody += `<p>${parseMarkdown(line)}</p>\n`;
+        }else {
+          dataForBody += `<p>${line}</p>\n`;
+        }
+        
       }
       linecount++
     });
@@ -110,13 +121,14 @@ async function writeHTML(data, filename) {
 }
 
 // fn to read each file and will handle output of HTML format.
-async function readFile(filePath) {
+async function readFile(filePath , fileType) {
   fs.readFile(filePath, "utf8", (err, data) => {
     if (err) {
       console.error(err);
     } else {
+
       // create html file in dist
-      writeHTML(data, filePath);
+      writeHTML(data, filePath , fileType);
     }
   });
 }
