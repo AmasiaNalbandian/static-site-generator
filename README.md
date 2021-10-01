@@ -12,9 +12,9 @@ A CLI tool which creates a static html file from a text file that was provided. 
 _Once you run the command, you should receive the html files in the dist folder in the corresponding language directory_
 
 ## Flags:
-`--i` : Flag to indicate the files or directories to create HTML files for.
-`--v` : Indicates version of the ssg.
-`--h` : Will bring up the help menu.
+`--i` : Flag to indicate the files or directories to create HTML files for.  
+`--v` : Indicates version of the ssg.  
+`--h` : Will bring up the help menu.  
 `--lang`: allows you to include a language to display the html page in. You can input multiple choices followed by spaces. See below:
     ![](https://i.imgur.com/RZoad46.png)
     ![](https://i.imgur.com/AstdjnR.png)
