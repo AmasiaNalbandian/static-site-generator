@@ -15,6 +15,9 @@ _Once you run the command, you should receive the html files in the dist folder 
 `--i` : Flag to indicate the files or directories to create HTML files for.
 `--v` : Indicates version of the ssg.
 `--h` : Will bring up the help menu.
+`--lang`: allows you to include a language to display the html page in. You can input multiple choices followed by spaces. See below:
+    ![](https://i.imgur.com/RZoad46.png)
+    ![](https://i.imgur.com/AstdjnR.png)
 
 ## Input File Types: 
 1. Directories: Recursive strategy will automatically be done.
@@ -23,11 +26,3 @@ _Once you run the command, you should receive the html files in the dist folder 
 3. Markdown: Any file that is created using markdown and ends in the extention `.md`
     _Supports: h1, h2, h3, blockquotes, bold, italics, image, links, breaks, in-line code blocks_
 
-  
-## Flags:
-`--i` : Flag to indicate the files or directories to create HTML files for.
-`--v` : Indicates version of the ssg.
-`--h` : Will bring up the help menu.
-`--lang`: allows you to include a language to display the html page in. You can input multiple choices followed by spaces. See below:
-    ![](https://i.imgur.com/RZoad46.png)
-    ![](https://i.imgur.com/AstdjnR.png)
