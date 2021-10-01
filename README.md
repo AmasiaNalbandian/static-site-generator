@@ -13,3 +13,10 @@ Additional features:
 3. You can create html files from markdown files as well with markdown features implemented.
 
   
+## Flags:
+`--i` : Flag to indicate the files or directories to create HTML files for.
+`--v` : Indicates version of the ssg.
+`--h` : Will bring up the help menu.
+`--lang`: allows you to include a language to display the html page in. You can input multiple choices followed by spaces. See below:
+    ![](https://i.imgur.com/RZoad46.png)
+    ![](https://i.imgur.com/AstdjnR.png)
