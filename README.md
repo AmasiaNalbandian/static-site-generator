@@ -10,6 +10,6 @@ A CLI tool which creates a static html file from a text file that was provided.
 Additional features:
 1. You can create html files for a directory with txt files.
 2. You can specify the location of the file using the relative path.
-
+3. You can create html files from markdown files as well with markdown features implemented.
 
   
