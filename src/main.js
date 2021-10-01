@@ -10,7 +10,6 @@ function checkExists(args, recursive) {
   for (let i = 0; i < args.length; i++) {
     // try to get access to file:
     fs.stat(args[i].name, (err, stats) => {
-      
       if (err) {
         console.error(
           "%s",
@@ -29,8 +28,7 @@ function checkExists(args, recursive) {
           }
           recursiveSearch++;
         } else {
-
-          readFile(args[i].name , args[i].type);
+          readFile(args[i].name, args[i].type);
         }
       }
     });
@@ -39,18 +37,35 @@ function checkExists(args, recursive) {
 
 // Markdown support function
 function parseMarkdown(markdownText) {
-	const htmlText = markdownText
-		.replace(/^### (.*$)/gim, '<h3>$1</h3>')
-		.replace(/^## (.*$)/gim, '<h2>$1</h2>')
-		.replace(/^# (.*$)/gim, '<h1>$1</h1>')
-		.replace(/^\> (.*$)/gim, '<blockquote>$1</blockquote>')
-		.replace(/\*\*(.*)\*\*/gim, '<b>$1</b>')
-		.replace(/\*(.*)\*/gim, '<i>$1</i>')
-		.replace(/!\[(.*?)\]\((.*?)\)/gim, "<img alt='$1' src='$2' />")
-		.replace(/\[(.*?)\]\((.*?)\)/gim, "<a href='$2'>$1</a>")
-		.replace(/\n$/gim, '<br />')
+  const htmlText = markdownText
+    .replace(/^### (.*$)/gim, "<h3>$1</h3>")
+    .replace(/^## (.*$)/gim, "<h2>$1</h2>")
+    .replace(/^# (.*$)/gim, "<h1>$1</h1>")
+    .replace(/^\> (.*$)/gim, "<blockquote>$1</blockquote>")
+    .replace(/\*\*(.*)\*\*/gim, "<b>$1</b>")
+    .replace(/\*(.*)\*/gim, "<i>$1</i>")
+    .replace(/!\[(.*?)\]\((.*?)\)/gim, "<img alt='$1' src='$2' />")
+    .replace(/\[(.*?)\]\((.*?)\)/gim, "<a href='$2'>$1</a>")
+    .replace(/\n$/gim, "<br />");
 
-	return htmlText.trim()
+  return htmlText.trim();
+}
+
+
+// Markdown clean function
+function clearMarkdown(markdownText) {
+  const htmlText = markdownText
+    .replace(/^### (.*$)/gim, "$1")
+    .replace(/^## (.*$)/gim, "$1")
+    .replace(/^# (.*$)/gim, "$1")
+    .replace(/^\> (.*$)/gim, "$1")
+    .replace(/\*\*(.*)\*\*/gim, "$1")
+    .replace(/\*(.*)\*/gim, "$1")
+    .replace(/!\[(.*?)\]\((.*?)\)/gim, "$1")
+    .replace(/\[(.*?)\]\((.*?)\)/gim, "$1")
+    .replace(/\n$/gim, "$1");
+
+  return htmlText.trim();
 }
 
 // Handle the dist file:
@@ -62,35 +77,29 @@ async function emptyDist() {
   }
 }
 
-
 // fn to write HTML format
-async function writeHTML(data, filename , filetype) {
+async function writeHTML(data, filename, filetype) {
   let dataForBody = "";
   let title;
   if (data.length) {
     let linecount = 0;
-    
+
     let content = data.split("\n");
     content.forEach((line) => {
-      if(linecount ===0) {
+      if (linecount === 0) {
         title = line;
-
-        if(filetype == 'md'){
-          dataForBody += `<h1>${parseMarkdown(line)}</h1>\n`;
-        }else {
-          dataForBody += `<h1>${line}</h1>\n`;
+        if (filetype == "md") {
+          title = clearMarkdown(title);
         }
-
+        dataForBody += `<h1>${title}</h1>\n`;
       } else {
-
-        if(filetype == 'md'){
+        if (filetype == "md") {
           dataForBody += `<p>${parseMarkdown(line)}</p>\n`;
-        }else {
+        } else {
           dataForBody += `<p>${line}</p>\n`;
         }
-        
       }
-      linecount++
+      linecount++;
     });
   }
 
@@ -121,14 +130,13 @@ async function writeHTML(data, filename , filetype) {
 }
 
 // fn to read each file and will handle output of HTML format.
-async function readFile(filePath , fileType) {
+async function readFile(filePath, fileType) {
   fs.readFile(filePath, "utf8", (err, data) => {
     if (err) {
       console.error(err);
     } else {
-
       // create html file in dist
-      writeHTML(data, filePath , fileType);
+      writeHTML(data, filePath, fileType);
     }
   });
 }
@@ -143,7 +151,7 @@ export async function readDirectory(directoryPath) {
 
     files.forEach((file) => {
       let newpath = "./" + directoryPath + file;
-      files.push(newpath)
+      files.push(newpath);
 
       // reads the inside of directory
       fs.stat(newpath, (err, stats) => {
