@@ -17,6 +17,7 @@ async function parseArguments(argsRaw) {
     "--h": "--help",
     "--version": Boolean,
     "--v": "--version",
+    "--lang": Boolean
   });
 
   const values = {
@@ -24,6 +25,7 @@ async function parseArguments(argsRaw) {
     empty: args["--empty"] || false,
     version: args["--version"] || false,
     help: args["--help"] || false,
+    lang: args["--lang"] || false,
     // recursive: args["--recursive"] || false,
     files: [],
     directories: []
@@ -43,10 +45,29 @@ async function parseArguments(argsRaw) {
     );
   }
 
+
+  if (values.input && values.lang) {
+    let languages, files;
+    // if more than one flag with inputs (specifically lang flag)
+    if (argsRaw.indexOf("--i") < argsRaw.indexOf("--lang")) {
+      //input before lang flag
+      files = argsRaw.splice(argsRaw.indexOf("--i") + 1);
+      languages = files.splice(files.indexOf("--lang")+1);
+      files.splice(files.indexOf("--lang"));
+    } else {
+      //lang flag before input
+      languages = argsRaw.splice(argsRaw.indexOf("--lang")+1);
+      files = languages.splice(languages.indexOf("--i") + 1);
+      languages.splice(languages.indexOf("--i"));
+    }
+    getFiles(files, values)
+    values.lang = languages;
+  }
   // filter out all arguments after the --input flag to identify as text files and push to the values.files
-  if (values.input) {
+  if (values.input && !values.lang) {
     //find the location of where the input flag was put, and parse arguments after that as files.
     let files = argsRaw.splice(argsRaw.indexOf("--i") + 1);
+    values.lang = ['en']
     getFiles(files, values)
   }
 
@@ -152,8 +173,7 @@ async function promptOptions(options) {
 export async function cli(args) {
   let options = await parseArguments(args);
   if (options && options.input) {
-    await createHtml(options.directories, true)
-    await createHtml(options.files, false);
+    await createHtml(options, true)
   } else {
     // console.log("Input files were not received.")
     // options = await promptOptions(options);

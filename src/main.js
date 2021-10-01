@@ -5,6 +5,7 @@ const fse = require("fs-extra");
 // will allow us to recursively convert HTML in a folder once
 // This feature will be removed once the recursiveness is functional
 let recursiveSearch = 0;
+let options = {};
 
 function checkExists(args, recursive) {
   for (let i = 0; i < args.length; i++) {
@@ -23,8 +24,12 @@ function checkExists(args, recursive) {
         // if it exists handle whether its a file or directory
         if (stats.isDirectory()) {
           if (recursiveSearch === 0) {
-            !fs.existsSync(`./dist/${args[i].name}`) &&
-              fs.mkdirSync(`./dist/${args[i].name}`, { recursive: true });
+            options.lang.forEach((language) => {
+              !fs.existsSync(`./dist/${language}/${args[i].name}`) &&
+                fs.mkdirSync(`./dist/${language}/${args[i].name}`, {
+                  recursive: true,
+                });
+            });
           }
           recursiveSearch++;
         } else {
@@ -50,7 +55,6 @@ function parseMarkdown(markdownText) {
 
   return htmlText.trim();
 }
-
 
 // Markdown clean function
 function clearMarkdown(markdownText) {
@@ -79,32 +83,33 @@ async function emptyDist() {
 
 // fn to write HTML format
 async function writeHTML(data, filename, filetype) {
-  let dataForBody = "";
-  let title;
-  if (data.length) {
-    let linecount = 0;
+  options.lang.forEach((language) => {
+    let dataForBody = "";
+    let title;
+    if (data.length) {
+      let linecount = 0;
 
-    let content = data.split("\n");
-    content.forEach((line) => {
-      if (linecount === 0) {
-        title = line;
-        if (filetype == "md") {
-          title = clearMarkdown(title);
-        }
-        dataForBody += `<h1>${title}</h1>\n`;
-      } else {
-        if (filetype == "md") {
-          dataForBody += `<p>${parseMarkdown(line)}</p>\n`;
+      let content = data.split("\n");
+      content.forEach((line) => {
+        if (linecount === 0) {
+          title = line;
+          if (filetype == "md") {
+            title = clearMarkdown(title);
+          }
+          dataForBody += `<h1>${title}</h1>\n`;
         } else {
-          dataForBody += `<p>${line}</p>\n`;
+          if (filetype == "md") {
+            dataForBody += `<p>${parseMarkdown(line)}</p>\n`;
+          } else {
+            dataForBody += `<p>${line}</p>\n`;
+          }
         }
-      }
-      linecount++;
-    });
-  }
+        linecount++;
+      });
+    }
 
-  let datatoHTML = `<!doctype html>
-  <html lang="en">
+    let datatoHTML = `<!doctype html>
+  <html lang="${language}">
   <head>
     <meta charset="utf-8">
     <title>${title}</title>
@@ -114,18 +119,25 @@ async function writeHTML(data, filename, filetype) {
   <body>\n${dataForBody}</body>
   </html>
   `;
-  const newname = filename.replace(/\.[^/.]+$/, ".html");
+    const newname = filename.replace(/\.[^/.]+$/, ".html");
 
-  if (recursiveSearch > 0)
-    !fs.existsSync(`./dist/`) && fs.mkdirSync(`./dist/`, { recursive: true });
+    if (recursiveSearch > 0)
+      !fs.existsSync(`./dist/${language}`) &&
+        fs.mkdirSync(`./dist/${language}`, { recursive: true });
 
-  fs.writeFile(`dist/${newname}`, datatoHTML, (err, data) => {
-    if (err) {
-      console.error(err);
-    } else {
-      // success message after html gets parsed
-      console.error("%s", chalk.green.bold("HTML Created for " + filename));
-    }
+    fs.writeFile(`dist/${language}/${newname}`, datatoHTML, (err, data) => {
+      if (err) {
+        console.error(err);
+      } else {
+        // success message after html gets parsed
+        console.error(
+          "%s",
+          chalk.green.bold(
+            "HTML Created for " + filename + " in language: " + language
+          )
+        );
+      }
+    });
   });
 }
 
@@ -180,7 +192,9 @@ export async function readDirectory(directoryPath) {
   1) read the file and convert to html format.
   2) recursively access files in the directory and perform option 1
 */
-export async function createHtml(files, recursive) {
+export async function createHtml(opts) {
   await emptyDist();
-  checkExists(files, recursive);
+  options = opts;
+  checkExists(options.directories, false);
+  checkExists(options.files, true);
 }
