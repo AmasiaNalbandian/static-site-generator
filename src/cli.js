@@ -4,6 +4,7 @@ import chalk from "chalk";
 import { createHtml, readDirectory } from "./main";
 import fs, { stat } from "fs";
 const p = require("../package");
+import { getOptions } from "./config";
 
 async function parseArguments(argsRaw) {
   const args = arg({
@@ -17,7 +18,9 @@ async function parseArguments(argsRaw) {
     "--h": "--help",
     "--version": Boolean,
     "--v": "--version",
-    "--lang": Boolean
+    "--lang": Boolean,
+    "--config": String,
+    "--c": "--config"  
   });
 
   const values = {
@@ -37,6 +40,17 @@ async function parseArguments(argsRaw) {
     return;
   }
 
+  if (args["--config"]) {
+    const jsonValues = await getOptions(args["--config"]);
+    if (jsonValues && jsonValues.input) {
+      getFiles(jsonValues.input, jsonValues);
+    }
+
+    // exit early, since the rest is
+    // dealing with the CLI args
+    return jsonValues;
+  }
+    
   // Prints out the dialogue for the version of the package, alongside the name of the package.
   if (values.version) {
     console.error(
@@ -70,7 +84,7 @@ async function parseArguments(argsRaw) {
     values.lang = ['en']
     getFiles(files, values)
   }
-
+    
   return values;
 }
 
@@ -132,7 +146,7 @@ function printHelp() {
   );
 
   console.log(
-    "%s \n--version: provides version of package\n--input: flag used to indicate files to convert",
+    "%s \n--version: provides version of package\n--input: flag used to indicate files to convert\n--config: option to indicate config file to read from",
     chalk.inverse.bold("Flag Directory")
   );
 }

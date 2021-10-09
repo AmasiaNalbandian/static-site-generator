@@ -12,12 +12,23 @@ A CLI tool which creates a static html file from a text file that was provided. 
 _Once you run the command, you should receive the html files in the dist folder in the corresponding language directory_
 
 ## Flags:
-`--i` : Flag to indicate the files or directories to create HTML files for.  
-`--v` : Indicates version of the ssg.  
-`--h` : Will bring up the help menu.  
-`--lang`: allows you to include a language to display the html page in. You can input multiple choices followed by spaces. See below:
+* `--i` : Flag to indicate the files or directories to create HTML files for.  
+* `--v` : Indicates version of the ssg.  
+* `--h` : Will bring up the help menu.  
+* `--lang`: allows you to include a language to display the html page in.
+* `--config`: allows you to pass a configuration file that can pass the same options as the command line. See the section for `Configuration File` for more information.
+
+You can input multiple choices followed by spaces. See below:
+
     ![](https://i.imgur.com/RZoad46.png)
     ![](https://i.imgur.com/AstdjnR.png)
+
+### Configuration File
+
+The configuration file is a JSON formatted file, where each property is can be of the following:
+
+* `input`: a string that works as a path to file that will be used to generate HTML files. It can also be an array of strings.
+* `lang`: a string that specifies the language tag that the HTML page will be annotated with. It can also be an array of strings.
 
 ## Input File Types: 
 1. Directories: Recursive strategy will automatically be done.
@@ -25,4 +36,3 @@ _Once you run the command, you should receive the html files in the dist folder 
     _Supports: creates paragraphs of each line_
 3. Markdown: Any file that is created using markdown and ends in the extention `.md`
     _Supports: h1, h2, h3, blockquotes, bold, italics, image, links, breaks, in-line code blocks_
-
