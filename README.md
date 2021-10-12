@@ -19,9 +19,8 @@ _Once you run the command, you should receive the html files in the dist folder 
 * `--config`: allows you to pass a configuration file that can pass the same options as the command line. See the section for `Configuration File` for more information.
 
 You can input multiple choices followed by spaces. See below:
-
-    ![](https://i.imgur.com/RZoad46.png)
-    ![](https://i.imgur.com/AstdjnR.png)
+ ![](https://i.imgur.com/RZoad46.png) \
+ ![](https://i.imgur.com/AstdjnR.png)
 
 ### Configuration File
 
@@ -29,6 +28,8 @@ The configuration file is a JSON formatted file, where each property is can be o
 
 * `input`: a string that works as a path to file that will be used to generate HTML files. It can also be an array of strings.
 * `lang`: a string that specifies the language tag that the HTML page will be annotated with. It can also be an array of strings.
+_Image of multiple input and languages in config file:_\
+![image](https://user-images.githubusercontent.com/77639637/136974369-8f27c5c6-44e8-4f6e-ac8f-ea87d1398c3c.png)
 
 ## Input File Types: 
 1. Directories: Recursive strategy will automatically be done.
