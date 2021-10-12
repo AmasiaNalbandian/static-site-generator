@@ -122,9 +122,9 @@ async function writeHTML(data, filename, filetype) {
   `;
     const newname = filename.replace(/\.[^/.]+$/, ".html");
 
-    if (recursiveSearch > 0)
-      !fs.existsSync(`./dist/${language}`) &&
-        fs.mkdirSync(`./dist/${language}`, { recursive: true });
+    if (!fs.existsSync(`./dist/${language}`)) {
+      fs.mkdirSync(`./dist/${language}`, { recursive: true });
+    }
 
     fs.writeFile(`dist/${language}/${newname}`, datatoHTML, (err, data) => {
       if (err) {
