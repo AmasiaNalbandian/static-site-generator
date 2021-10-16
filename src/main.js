@@ -1,10 +1,10 @@
 import chalk from "chalk";
-import fs, { stat } from "fs";
-const fse = require("fs-extra");
+import fs from "fs";
+import fse from "fs-extra";
 
 // will allow us to recursively convert HTML in a folder once
 // This feature will be removed once the recursiveness is functional
-let recursiveSearch = 0;
+let recursiveSearch = false;
 let options = {};
 
 function checkExists(args, recursive) {
@@ -23,7 +23,7 @@ function checkExists(args, recursive) {
       } else {
         // if it exists handle whether its a file or directory
         if (stats.isDirectory()) {
-          if (recursiveSearch === 0) {
+          if (!recursiveSearch) {
             options.lang.forEach((language) => {
               !fs.existsSync(`./dist/${language}/${args[i].name}`) &&
                 fs.mkdirSync(`./dist/${language}/${args[i].name}`, {
@@ -31,7 +31,7 @@ function checkExists(args, recursive) {
                 });
             });
           }
-          recursiveSearch++;
+          recursiveSearch = !recursiveSearch;
         } else {
           readFile(args[i].name, args[i].type);
         }
@@ -40,7 +40,10 @@ function checkExists(args, recursive) {
   }
 }
 
-// Markdown support function
+/**
+ * Function accepts a string which includes Markdown syntax and returns 
+ * the same string with syntax converted for HTML pages.
+ */
 function parseMarkdown(markdownText) {
   const htmlText = markdownText
     .replace(/^### (.*$)/gim, "<h3>$1</h3>")
@@ -57,7 +60,10 @@ function parseMarkdown(markdownText) {
   return htmlText.trim();
 }
 
-// Markdown clean function
+/**
+ * Function accepts a string which then cleanses all markdown syntax
+ * and returns raw text from the string.
+ */
 function clearMarkdown(markdownText) {
   const htmlText = markdownText
     .replace(/^### (.*$)/gim, "$1")
@@ -73,7 +79,11 @@ function clearMarkdown(markdownText) {
   return htmlText.trim();
 }
 
-// Handle the dist file:
+/**
+ * Asynchronous function to empty a directory called dist
+ * where the resulting files will be stored. Ensures old files are removed
+ * and overwritten with new versions of the same filename. 
+ */
 async function emptyDist() {
   try {
     await fse.emptyDir("./dist/");
@@ -82,7 +92,10 @@ async function emptyDist() {
   }
 }
 
-// fn to write HTML format
+/**
+ * Asynchronous function which accepts data, filename and filetype
+ * to write HTML in the file. 
+ */
 async function writeHTML(data, filename, filetype) {
   options.lang.forEach((language) => {
     let dataForBody = "";
@@ -131,7 +144,7 @@ async function writeHTML(data, filename, filetype) {
         console.error(err);
       } else {
         // success message after html gets parsed
-        console.error(
+        console.log(
           "%s",
           chalk.green.bold(
             "HTML Created for " + filename + " in language: " + language
@@ -142,7 +155,10 @@ async function writeHTML(data, filename, filetype) {
   });
 }
 
-// fn to read each file and will handle output of HTML format.
+/**
+ * Asynchronous function to read files which are passed. If no errors are found, 
+ * the function redirects the information to the writeHTML function.
+ */
 async function readFile(filePath, fileType) {
   fs.readFile(filePath, "utf8", (err, data) => {
     if (err) {
@@ -154,6 +170,11 @@ async function readFile(filePath, fileType) {
   });
 }
 
+/**
+ * Asynchronous function accepts a path for a directory to read each file
+ * to successfully create the an HTML document, and place the HTML documents
+ * in their corresponding directory path within the dist directory. 
+ */
 export async function readDirectory(directoryPath) {
   let files = [];
   fs.readdir(directoryPath, function (err, files) {
@@ -189,10 +210,11 @@ export async function readDirectory(directoryPath) {
   });
 }
 
-/* driver code to grab arguments received and either 
-  1) read the file and convert to html format.
-  2) recursively access files in the directory and perform option 1
-*/
+/**
+ * Driver code to parse arguments received from the CLI and either 
+ * 1) Recursively access a directory, and then; 
+ * 2) Read each file and covert them to HTML Format.
+ */
 export async function createHtml(opts) {
   await emptyDist();
   options = opts;

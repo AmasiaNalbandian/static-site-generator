@@ -1,94 +1,103 @@
 import arg from "arg";
-import inquirer from "inquirer";
 import chalk from "chalk";
-import { createHtml, readDirectory } from "./main";
-import fs, { stat } from "fs";
-const p = require("../package");
+import { createHtml } from "./main";
+import { name, version } from "../package.json";
+import fs from "fs";
 import { getOptions } from "./config";
 
+/**
+ * Asynchronous function to parse the flags passed in the CLI
+ * when running the program.
+ */
 async function parseArguments(argsRaw) {
-  const args = arg({
-    "--input": Boolean,
-    "--i": "--input",
-    "--empty": Boolean,
-    "--e": "--empty",
-    "--recursive": Boolean,
-    "--r": "--recursive",
-    "--help": Boolean,
-    "--h": "--help",
-    "--version": Boolean,
-    "--v": "--version",
-    "--lang": Boolean,
-    "--config": String,
-    "--c": "--config"  
-  });
+  try {
+    const args = arg({
+      "--input": Boolean,
+      "--i": "--input",
+      "--empty": Boolean,
+      "--e": "--empty",
+      "--recursive": Boolean,
+      "--r": "--recursive",
+      "--help": Boolean,
+      "--h": "--help",
+      "--version": Boolean,
+      "--v": "--version",
+      "--lang": Boolean,
+      "--config": String,
+      "--c": "--config",
+    });
 
-  const values = {
-    input: args["--input"] || false,
-    empty: args["--empty"] || false,
-    version: args["--version"] || false,
-    help: args["--help"] || false,
-    lang: args["--lang"] || false,
-    // recursive: args["--recursive"] || false,
-    files: [],
-    directories: []
-  };
+    const values = {
+      input: args["--input"] || false,
+      empty: args["--empty"] || false,
+      version: args["--version"] || false,
+      help: args["--help"] || false,
+      lang: args["--lang"] || false,
+      // recursive: args["--recursive"] || false,
+      files: [],
+      directories: [],
+    };
 
-  // Will print out the help dialogue - this flag will not do anything other than print out the help.
-  if (values.help) {
+    // Will print out the help dialogue - this flag will not do anything other than print out the help.
+    if (values.help) {
+      printHelp();
+      return;
+    }
+
+    if (args["--config"]) {
+      const jsonValues = await getOptions(args["--config"]);
+      if (jsonValues && jsonValues.input) {
+        getFiles(jsonValues.input, jsonValues);
+      }
+
+      // exit early, since the rest is
+      // dealing with the CLI args
+      return jsonValues;
+    }
+
+    // Prints out the dialogue for the version of the package, alongside the name of the package.
+    if (values.version) {
+      console.error(
+        "%s",
+        chalk.green.bold.inverse(name + " version: " + version + "\n")
+      );
+    }
+
+    if (values.input && values.lang) {
+      let languages, files;
+      // if more than one flag with inputs (specifically lang flag)
+      if (argsRaw.indexOf("--i") < argsRaw.indexOf("--lang")) {
+        //input before lang flag
+        files = argsRaw.splice(argsRaw.indexOf("--i") + 1);
+        languages = files.splice(files.indexOf("--lang") + 1);
+        files.splice(files.indexOf("--lang"));
+      } else {
+        //lang flag before input
+        languages = argsRaw.splice(argsRaw.indexOf("--lang") + 1);
+        files = languages.splice(languages.indexOf("--i") + 1);
+        languages.splice(languages.indexOf("--i"));
+      }
+      getFiles(files, values);
+      values.lang = languages;
+    }
+    // filter out all arguments after the --input flag to identify as text files and push to the values.files
+    if (values.input && !values.lang) {
+      //find the location of where the input flag was put, and parse arguments after that as files.
+      let files = argsRaw.splice(argsRaw.indexOf("--i") + 1);
+      values.lang = ["en"];
+      getFiles(files, values);
+    }
+    return values;
+  } catch (err) {
+    console.log("%s", chalk.red("An error occured - Please check your input.\n"));
     printHelp();
     return;
   }
-
-  if (args["--config"]) {
-    const jsonValues = await getOptions(args["--config"]);
-    if (jsonValues && jsonValues.input) {
-      getFiles(jsonValues.input, jsonValues);
-    }
-
-    // exit early, since the rest is
-    // dealing with the CLI args
-    return jsonValues;
-  }
-    
-  // Prints out the dialogue for the version of the package, alongside the name of the package.
-  if (values.version) {
-    console.error(
-      "%s",
-      chalk.green.bold.inverse(p.name + " version: " + p.version + "\n")
-    );
-  }
-
-
-  if (values.input && values.lang) {
-    let languages, files;
-    // if more than one flag with inputs (specifically lang flag)
-    if (argsRaw.indexOf("--i") < argsRaw.indexOf("--lang")) {
-      //input before lang flag
-      files = argsRaw.splice(argsRaw.indexOf("--i") + 1);
-      languages = files.splice(files.indexOf("--lang")+1);
-      files.splice(files.indexOf("--lang"));
-    } else {
-      //lang flag before input
-      languages = argsRaw.splice(argsRaw.indexOf("--lang")+1);
-      files = languages.splice(languages.indexOf("--i") + 1);
-      languages.splice(languages.indexOf("--i"));
-    }
-    getFiles(files, values)
-    values.lang = languages;
-  }
-  // filter out all arguments after the --input flag to identify as text files and push to the values.files
-  if (values.input && !values.lang) {
-    //find the location of where the input flag was put, and parse arguments after that as files.
-    let files = argsRaw.splice(argsRaw.indexOf("--i") + 1);
-    values.lang = ['en']
-    getFiles(files, values)
-  }
-    
-  return values;
 }
 
-
+/**
+ * Function to handle files and organize into objects
+ */
 function getFiles(files, values) {
   files.forEach((file) => {
     if (file.includes(".txt")) {
@@ -103,16 +112,15 @@ function getFiles(files, values) {
       });
     } else {
       let dirFiles = fs.readdirSync(file);
-      values.directories.push({name: file, type: "dir"})
+      values.directories.push({ name: file, type: "dir" });
       // getFiles(dirFiles, values)
 
       dirFiles.forEach((f) => {
-        let newpath = "./" + file +'/'+ f; // condense into the statement, no need for var
+        let newpath = "./" + file + "/" + f; // condense into the statement, no need for var
         values.files.push({
           name: newpath,
         });
         fs.stat(newpath, (err, stats) => {
-      
           if (err) {
             console.error(
               "%s",
@@ -128,69 +136,40 @@ function getFiles(files, values) {
               getFiles(f, values);
             }
           }
-        })
+        });
       });
     }
   });
 }
 
-
+/**
+ * Function to print the help menu
+ */
 function printHelp() {
   console.log("%s", chalk.blue.bold.underline("Information Directives:"));
 
   console.log(
     "%s",
     chalk.cyan(
-      "The Static Site Generator will accept .txt files and convert the data within it to HTML.\nThese HTML files can then be used to host the website\n"
+      "The Static Site Generator will accept input for text(.txt) or markdown(.md) files and convert the data within it to HTML.\nDirectories with the mentioned file types are also supported.\nThese HTML files can then be used to host the website\n"
     )
   );
 
   console.log(
-    "%s \n--version: provides version of package\n--input: flag used to indicate files to convert\n--config: option to indicate config file to read from",
+    "%s \n--version: provides version of package\n--input: flag used to indicate files to convert\n--config: option to indicate config file to read from\n--lang: option to indicate the language for the HTML page",
     chalk.inverse.bold("Flag Directory")
   );
 }
 
-async function promptOptions(options) {
-  const promptQuestions = [];
-  if (!options.input && !options.empty) {
-    // if no arguments were given- prompt to make an empty html file or input the file name
-    promptQuestions.push({
-      type: "confirm",
-      name: "empty",
-      message: "Would you like to create an empty HTML file?",
-      default: true,
-    });
-  }
-
-  const res = await inquirer.prompt(promptQuestions);
-  let filename = "";
-  if (!res.empty && !options.input) {
-    promptQuestions.splice(0, promptQuestions.length);
-    promptQuestions.push({
-      type: "input",
-      name: "filename",
-      message: "Please enter the file name: ",
-      default: false,
-    });
-
-    filename = await inquirer.prompt(promptQuestions);
-  }
-
-  return {
-    ...options,
-    empty: options.empty || res.empty,
-    files: filename,
-  };
-}
-
+/**
+ * Asynchronous function to handle the CLI arguments passed.
+ */
 export async function cli(args) {
   let options = await parseArguments(args);
   if (options && options.input) {
-    await createHtml(options, true)
-  } else {
-    // console.log("Input files were not received.")
-    // options = await promptOptions(options);
-    // await createHtml(options.files);
+    await createHtml(options, true);
+  } else if (options !== undefined && !options.version && !options.help) {
+    console.log("%s", chalk.red("Input received was incorrect. Please refer to help below.\n"));
+    printHelp();
   }
 }
