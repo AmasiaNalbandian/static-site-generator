@@ -1,11 +1,18 @@
 import chalk from "chalk";
 import fs from "fs";
 import fse from "fs-extra";
+import MarkdownIt from "markdown-it";
 
 // will allow us to recursively convert HTML in a folder once
 // This feature will be removed once the recursiveness is functional
 let recursiveSearch = false;
 let options = {};
+
+/**Create a reference to use markdown-it library to parse markdown 
+ * to html. This is from the package Markdown-it:
+ * https://www.npmjs.com/package/markdown-it
+ */
+var md = new MarkdownIt();
 
 function checkExists(args, recursive) {
   for (let i = 0; i < args.length; i++) {
@@ -41,26 +48,6 @@ function checkExists(args, recursive) {
 }
 
 /**
- * Function accepts a string which includes Markdown syntax and returns 
- * the same string with syntax converted for HTML pages.
- */
-function parseMarkdown(markdownText) {
-  const htmlText = markdownText
-    .replace(/^### (.*$)/gim, "<h3>$1</h3>")
-    .replace(/^## (.*$)/gim, "<h2>$1</h2>")
-    .replace(/^# (.*$)/gim, "<h1>$1</h1>")
-    .replace(/^\> (.*$)/gim, "<blockquote>$1</blockquote>")
-    .replace(/\*\*(.*)\*\*/gim, "<b>$1</b>")
-    .replace(/\*(.*)\*/gim, "<i>$1</i>")
-    .replace(/!\[(.*?)\]\((.*?)\)/gim, "<img alt='$1' src='$2' />")
-    .replace(/\[(.*?)\]\((.*?)\)/gim, "<a href='$2'>$1</a>")
-    .replace(/\n$/gim, "<br />")
-    .replace(/`([^`]*)`/gim, "<code>$1</code>");
-
-  return htmlText.trim();
-}
-
-/**
  * Function accepts a string which then cleanses all markdown syntax
  * and returns raw text from the string.
  */
@@ -82,7 +69,7 @@ function clearMarkdown(markdownText) {
 /**
  * Asynchronous function to empty a directory called dist
  * where the resulting files will be stored. Ensures old files are removed
- * and overwritten with new versions of the same filename. 
+ * and overwritten with new versions of the same filename.
  */
 async function emptyDist() {
   try {
@@ -94,7 +81,7 @@ async function emptyDist() {
 
 /**
  * Asynchronous function which accepts data, filename and filetype
- * to write HTML in the file. 
+ * to write HTML in the file.
  */
 async function writeHTML(data, filename, filetype) {
   options.lang.forEach((language) => {
@@ -113,7 +100,7 @@ async function writeHTML(data, filename, filetype) {
           dataForBody += `<h1>${title}</h1>\n`;
         } else {
           if (filetype == "md") {
-            dataForBody += `<p>${parseMarkdown(line)}</p>\n`;
+            dataForBody += `<p>${md.render(line)}</p>\n`;
           } else {
             dataForBody += `<p>${line}</p>\n`;
           }
@@ -156,7 +143,7 @@ async function writeHTML(data, filename, filetype) {
 }
 
 /**
- * Asynchronous function to read files which are passed. If no errors are found, 
+ * Asynchronous function to read files which are passed. If no errors are found,
  * the function redirects the information to the writeHTML function.
  */
 async function readFile(filePath, fileType) {
@@ -173,7 +160,7 @@ async function readFile(filePath, fileType) {
 /**
  * Asynchronous function accepts a path for a directory to read each file
  * to successfully create the an HTML document, and place the HTML documents
- * in their corresponding directory path within the dist directory. 
+ * in their corresponding directory path within the dist directory.
  */
 export async function readDirectory(directoryPath) {
   let files = [];
@@ -211,8 +198,8 @@ export async function readDirectory(directoryPath) {
 }
 
 /**
- * Driver code to parse arguments received from the CLI and either 
- * 1) Recursively access a directory, and then; 
+ * Driver code to parse arguments received from the CLI and either
+ * 1) Recursively access a directory, and then;
  * 2) Read each file and covert them to HTML Format.
  */
 export async function createHtml(opts) {
