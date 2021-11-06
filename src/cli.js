@@ -89,7 +89,10 @@ async function parseArguments(argsRaw) {
     }
     return values;
   } catch (err) {
-    console.log("%s", chalk.red("An error occured - Please check your input.\n"));
+    console.log(
+      "%s",
+      chalk.red("An error occured - Please check your input.\n")
+    );
     printHelp();
     return;
   }
@@ -169,7 +172,10 @@ export async function cli(args) {
   if (options && options.input) {
     await createHtml(options, true);
   } else if (options !== undefined && !options.version && !options.help) {
-    console.log("%s", chalk.red("Input received was incorrect. Please refer to help below.\n"));
+    console.log(
+      "%s",
+      chalk.red("Input received was incorrect. Please refer to help below.\n")
+    );
     printHelp();
   }
 }

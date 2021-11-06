@@ -10,7 +10,8 @@
     "access": "public"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky install"
   },
   "keywords": [
     "cli",
@@ -26,5 +27,17 @@
     "inquirer": "^8.1.5",
     "markdown-it": "^12.2.0",
     "ncp": "^2.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.25.2",
+    "husky": "^7.0.4",
+    "lint-staged": "^11.2.6",
+    "prettier": "2.4.1"
+  },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
   }
 }

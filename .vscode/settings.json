@@ -1,0 +1,9 @@
+{
+  "editor.insertSpaces": true,
+  "editor.tabSize": 4,
+  "editor.detectIndendations": false,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "files.eol": "\n",
+  "files.insertFinalNewline": true
+}

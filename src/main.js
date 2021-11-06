@@ -8,7 +8,7 @@ import MarkdownIt from "markdown-it";
 let recursiveSearch = false;
 let options = {};
 
-/**Create a reference to use markdown-it library to parse markdown 
+/**Create a reference to use markdown-it library to parse markdown
  * to html. This is from the package Markdown-it:
  * https://www.npmjs.com/package/markdown-it
  */
