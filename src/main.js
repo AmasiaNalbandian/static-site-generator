@@ -1,7 +1,7 @@
-import chalk from "chalk";
-import fs from "fs";
-import fse from "fs-extra";
-import MarkdownIt from "markdown-it";
+const chalk = require("chalk");
+const fs = require("fs");
+const fse = require("fs-extra");
+const MarkdownIt = require("markdown-it");
 
 // will allow us to recursively convert HTML in a folder once
 // This feature will be removed once the recursiveness is functional
@@ -137,8 +137,10 @@ async function writeHTML(data, filename, filetype) {
             "HTML Created for " + filename + " in language: " + language
           )
         );
+        return datatoHTML;
       }
     });
+    return false;
   });
 }
 
@@ -155,6 +157,7 @@ async function readFile(filePath, fileType) {
       writeHTML(data, filePath, fileType);
     }
   });
+  return r;
 }
 
 /**
@@ -162,7 +165,7 @@ async function readFile(filePath, fileType) {
  * to successfully create the an HTML document, and place the HTML documents
  * in their corresponding directory path within the dist directory.
  */
-export async function readDirectory(directoryPath) {
+async function readDirectory(directoryPath) {
   let files = [];
   fs.readdir(directoryPath, function (err, files) {
     //handling error
@@ -202,9 +205,14 @@ export async function readDirectory(directoryPath) {
  * 1) Recursively access a directory, and then;
  * 2) Read each file and covert them to HTML Format.
  */
-export async function createHtml(opts) {
+async function createHtml(opts) {
   await emptyDist();
   options = opts;
   checkExists(options.directories, false);
   checkExists(options.files, true);
 }
+
+module.exports.readDirectory = readDirectory;
+module.exports.createHtml = createHtml;
+module.exports.readFile = readFile;
+module.exports.writeHTML = writeHTML;
