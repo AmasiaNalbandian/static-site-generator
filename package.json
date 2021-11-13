@@ -10,7 +10,7 @@
     "access": "public"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jasmine",
     "prepare": "husky install"
   },
   "keywords": [
@@ -34,6 +34,7 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.25.2",
     "husky": "^7.0.4",
+    "jasmine": "^3.10.0",
     "lint-staged": "^11.2.6",
     "prettier": "2.4.1"
   },

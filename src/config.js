@@ -1,6 +1,6 @@
-import fs from "fs";
+const fs = require("fs");
 
-export async function getOptions(pathToJsonFile) {
+function getOptions(pathToJsonFile) {
   if (!pathToJsonFile.endsWith(".json")) {
     console.error(
       "This is not a JSON file.\n" +
@@ -60,3 +60,5 @@ export async function getOptions(pathToJsonFile) {
     directories: [],
   };
 }
+
+module.exports.getOptions = getOptions;
