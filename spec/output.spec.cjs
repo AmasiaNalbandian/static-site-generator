@@ -53,7 +53,7 @@ describe("cleanses all markdown syntax", function () {
     setTimeout(function () {
       clearMarkdown("**This is bold text**").then((r) => {
         result = r;
-        expect(r).toEqual("");
+        expect(r).toEqual("This is bold text");
       });
     }, 10000);
   });
