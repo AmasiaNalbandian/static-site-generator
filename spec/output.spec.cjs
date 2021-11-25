@@ -50,10 +50,12 @@ describe("cleanses all markdown syntax", function () {
   // reads the file
   it("Passes string with markdown for bold using asterisks", function () {
     let result;
-    clearMarkdown("**This is bold text**").then((r) => {
-      result = r;
-      expect(r).toEqual("That is bold text");
-    });
+    setTimeout(function () {
+      clearMarkdown("**This is bold text**").then((r) => {
+        result = r;
+        expect(r).toEqual("This is bold text");
+      });
+    }, 10000);
   });
 
   // reads the file with text
