@@ -1,5 +1,5 @@
 {
-  "name": "ssg",
+  "name": "nlb-ssg",
   "version": "1.0.0",
   "description": "A CLI used to create html files from text files",
   "main": "src/index.js",
@@ -40,5 +40,16 @@
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
-  }
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AmasiaNalbandian/static-site-generator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AmasiaNalbandian/static-site-generator/issues"
+  },
+  "homepage": "https://github.com/AmasiaNalbandian/static-site-generator#readme"
 }
