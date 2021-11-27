@@ -157,7 +157,6 @@ async function readFile(filePath, fileType) {
       writeHTML(data, filePath, fileType);
     }
   });
-  return r;
 }
 
 /**
