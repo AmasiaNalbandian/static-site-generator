@@ -215,3 +215,4 @@ module.exports.readDirectory = readDirectory;
 module.exports.createHtml = createHtml;
 module.exports.readFile = readFile;
 module.exports.writeHTML = writeHTML;
+module.exports.clearMarkdown = clearMarkdown;
